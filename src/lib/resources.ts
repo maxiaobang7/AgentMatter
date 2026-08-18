@@ -21,8 +21,7 @@ export function resourceHref(resource: Resource, locale?: PublicLocale) {
 }
 
 export function githubHref(resource: Resource) {
-  const base = `https://github.com/${resource.owner}/${resource.repo}`;
-  return resource.componentPath ? `${base}/tree/HEAD/${resource.componentPath}` : base;
+  return `https://github.com/${resource.owner}/${resource.repo}`;
 }
 
 export function getResources(category?: CategorySlug, source: Resource[] = resources) {

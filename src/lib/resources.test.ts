@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { canonicalIdentity, filterResources, getResource, getResources, searchResources } from "@/lib/resources";
+import { canonicalIdentity, filterResources, getResource, getResources, githubHref, searchResources } from "@/lib/resources";
 
 describe("resource catalog", () => {
   it("keeps repository and component identity separate", () => {
     const context7 = getResource("upstash", "context7", "packages/mcp");
     expect(context7).toBeDefined();
     expect(canonicalIdentity(context7!)).toBe("upstash/context7#packages/mcp");
+  });
+
+  it("always links GitHub actions to the repository root", () => {
+    for (const resource of getResources()) {
+      expect(githubHref(resource), resource.id).toBe(`https://github.com/${resource.owner}/${resource.repo}`);
+    }
   });
 
   it("filters strictly by documented host labels", () => {
