@@ -1,0 +1,24 @@
+import { randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { api, loadResource } from "./common.mjs";
+
+const [fileArg, requestedMode] = process.argv.slice(2).filter((value) => value !== "--");
+const mode = requestedMode ?? "draft";
+if (!["draft", "publish", "update"].includes(mode)) throw new Error("模式必须是 draft、publish 或 update");
+const { file, resource } = await loadResource(fileArg);
+await api("/api/agent/v1/resources/validate", { method: "POST", body: JSON.stringify({ resource }) });
+const operationId = `local:${new Date().toISOString().replace(/[-:.TZ]/g, "")}:${randomUUID()}`;
+const write = await api(`/api/agent/v1/resources/${mode}`, { method: "POST", headers: { "idempotency-key": operationId }, body: JSON.stringify({ operationId, resource, note: `本地 Codex 从 ${path.basename(file)} 提交` }) });
+const operation = await api(`/api/agent/v1/operations/${encodeURIComponent(operationId)}`);
+const component = resource.componentPath ? `?component=${encodeURIComponent(resource.componentPath)}` : "";
+const readback = await api(`/api/agent/v1/resources/${encodeURIComponent(resource.owner)}/${encodeURIComponent(resource.repo)}${component}`);
+if (operation.result.status !== "succeeded") throw new Error(`操作读回未成功: ${operation.result.status}`);
+if (readback.result.stableKey !== write.result.stableKey || readback.result.contentHash !== write.result.contentHash) throw new Error("资源读回身份或内容哈希与写入回执不一致");
+const receipt = { completedAt: new Date().toISOString(), sourceFile: file, mode, operationId, write: write.result, operationReadback: operation.result, resourceReadback: { stableKey: readback.result.stableKey, status: readback.result.status, version: readback.result.version, contentHash: readback.result.contentHash } };
+const directory = path.resolve("operations/runs");
+await mkdir(directory, { recursive: true });
+const receiptPath = path.join(directory, `${operationId.replace(/:/g, "-")}.json`);
+await writeFile(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`, "utf8");
+console.log(`completed: ${mode} ${readback.result.stableKey} v${readback.result.version}`);
+console.log(`receipt: ${receiptPath}`);

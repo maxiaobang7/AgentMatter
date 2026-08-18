@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS media_assets (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  asset_key VARCHAR(80) NOT NULL,
+  owner VARCHAR(100) NOT NULL,
+  repo VARCHAR(100) NOT NULL,
+  source_url VARCHAR(1000) NOT NULL,
+  public_url VARCHAR(500) NOT NULL,
+  content_hash CHAR(64) NOT NULL,
+  mime_type VARCHAR(80) NOT NULL,
+  width INT UNSIGNED NOT NULL,
+  height INT UNSIGNED NOT NULL,
+  byte_size INT UNSIGNED NOT NULL,
+  actor VARCHAR(120) NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_media_asset_key (asset_key),
+  UNIQUE KEY uq_media_content_hash (content_hash),
+  KEY idx_media_repo (owner, repo, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

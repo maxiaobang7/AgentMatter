@@ -1,0 +1,79 @@
+{
+  "site": {
+    "name": "AgentMatter",
+    "canonicalUrl": "https://www.agentmatter.net",
+    "language": "zh-CN",
+    "publicLanguages": ["en", "zh-Hans"],
+    "defaultLanguage": "en",
+    "chinesePrefix": "/zh",
+    "timezone": "Asia/Shanghai",
+    "sourceBoundary": "GitHub only",
+    "categories": ["skills", "dsh", "plugins", "mcp", "prompts"]
+  },
+  "selection": {
+    "minimumScore": 75,
+    "dimensions": {
+      "agentRelevance": 25,
+      "documentationAndInstallability": 20,
+      "maintenance": 15,
+      "communityRecognition": 15,
+      "contentGap": 10,
+      "licenseClarity": 10,
+      "evidenceQuality": 5
+    },
+    "hardRejects": [
+      "duplicate stableKey",
+      "empty or marketing-only repository",
+      "missing usable installation or usage documentation",
+      "unrelated to the five AgentMatter categories",
+      "archived or suspicious repository without manual review"
+    ]
+  },
+  "editorial": {
+    "sections": ["项目介绍", "核心功能", "安装与使用", "使用场景", "使用评价", "README"],
+    "tone": ["轻松", "务实", "具体", "像朋友说明工具"],
+    "constraints": [
+      "do not fabricate personal testing",
+      "do not infer compatibility without evidence",
+      "copy installation commands from repository evidence",
+      "AI generated resources must include a project-specific installationGuide and at least two tutorialSteps",
+      "installationGuide must include an agentInstallPrompt with project identity, GitHub URL, installation task, verification and confirmation boundaries",
+      "installation tutorials must include prerequisites, direct steps, verification and necessary notes instead of sending users to README",
+      "state unverified installation and function status explicitly"
+    ]
+  },
+  "seo": {
+    "brandSuffix": "| AgentMatter",
+    "titleCandidates": 3,
+    "requiredFields": ["primaryKeyword", "title", "description", "searchIntent", "secondaryKeywords", "titleCandidates", "selectionReason"],
+    "titleRules": [
+      "include exact project name",
+      "include concrete use and resource type",
+      "match one clear search intent",
+      "do not include AgentMatter because the frontend appends it",
+      "do not use unsupported absolute claims",
+      "must not duplicate inventory seoTitle"
+    ]
+  },
+  "images": {
+    "optional": true,
+    "maximum": 3,
+    "allowedKinds": ["screenshot", "example", "diagram", "cover"],
+    "allowedSources": ["repository README", "repository assets", "repository docs", "repository examples"],
+    "reject": ["badge", "avatar", "logo-only", "social preview", "decorative image", "duplicate image"],
+    "cache": {
+      "format": "webp",
+      "maximumWidth": 1600,
+      "maximumHeight": 1600,
+      "maximumSourceBytes": 8000000
+    }
+  },
+  "publishing": {
+    "scheduledDefault": "draft",
+    "manualExplicitPublishAllowed": true,
+    "requireLocalValidation": true,
+    "requireMediaReadback": true,
+    "requireOperationReadback": true,
+    "requireResourceReadback": true
+  }
+}

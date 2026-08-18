@@ -1,0 +1,12 @@
+{
+  "id": "project-workflow",
+  "src": "https://raw.githubusercontent.com/owner/repo/main/docs/workflow.png",
+  "sourceUrl": "https://raw.githubusercontent.com/owner/repo/main/docs/workflow.png",
+  "evidenceUrl": "https://github.com/owner/repo/blob/main/docs/workflow.png",
+  "alt": "项目仓库展示的工作流程图",
+  "caption": "仓库公开流程图，展示项目从输入到输出的主要步骤。",
+  "kind": "diagram",
+  "placement": "after-introduction",
+  "width": 1200,
+  "height": 675
+}

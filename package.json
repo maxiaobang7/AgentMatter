@@ -1,0 +1,47 @@
+{
+  "name": "agentmatter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -H 127.0.0.1",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke:production": "node scripts/smoke-production.mjs",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed-resources.ts",
+    "schema:export": "tsx scripts/export-resource-schema.ts",
+    "admin:hash-password": "node scripts/hash-admin-password.mjs",
+    "agent:token": "node scripts/generate-agent-token.mjs",
+    "ops:inventory": "node operations/scripts/inventory.mjs",
+    "ops:media": "node operations/scripts/prepare-resource-media.mjs",
+    "ops:validate": "node operations/scripts/validate-resource.mjs",
+    "ops:publish": "node operations/scripts/publish-resource.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "5.3.0",
+    "@fontsource-variable/inter": "5.3.0",
+    "@next/env": "16.3.1",
+    "ajv": "^8.20.0",
+    "mysql2": "^3.23.3",
+    "next": "16.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "sharp": "0.35.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.1",
+    "tsx": "^4.23.12",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  },
+  "packageManager": "pnpm@11.19.0"
+}

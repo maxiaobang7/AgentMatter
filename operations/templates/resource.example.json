@@ -1,0 +1,441 @@
+{
+  "id": "anthropics-skills",
+  "name": "Anthropic Skills",
+  "owner": "anthropics",
+  "repo": "skills",
+  "componentPath": "skills",
+  "category": "skills",
+  "subtype": "官方目录",
+  "officialKind": "platform",
+  "summary": "Anthropic 公开的 Agent Skills 目录，覆盖文档、设计、开发和内容工作流。",
+  "stars": 169508,
+  "license": "多许可证",
+  "language": "Python",
+  "updatedAt": "2026-08-13T18:09:56Z",
+  "compatibilities": [
+    {
+      "host": "Claude Code",
+      "level": "documented",
+      "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+    },
+    {
+      "host": "Claude.ai",
+      "level": "documented",
+      "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+    },
+    {
+      "host": "Claude API",
+      "level": "documented",
+      "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+    }
+  ],
+  "facts": [
+    "18 个 Skill",
+    "含模板与规范",
+    "合集"
+  ],
+  "capabilities": [
+    "文档处理",
+    "前端设计",
+    "Skill 创建",
+    "MCP 开发"
+  ],
+  "acquisitions": [
+    {
+      "label": "浏览 Skills",
+      "mode": "browse",
+      "url": "https://github.com/anthropics/skills/tree/main/skills",
+      "evidenceUrl": "https://github.com/anthropics/skills/tree/main/skills"
+    }
+  ],
+  "verifications": [
+    {
+      "level": "metadata",
+      "status": "verified",
+      "checkedAt": "2026-08-15",
+      "note": "仓库身份、说明、许可证与关键结构已读取",
+      "environment": "GitHub 公开仓库与项目文档",
+      "evidenceUrls": [
+        "https://github.com/anthropics/skills",
+        "https://github.com/anthropics/skills#readme",
+        "https://github.com/anthropics/skills/tree/HEAD/skills"
+      ],
+      "result": "已读取仓库身份、公开说明、许可证标记与关键结构；未执行安装或功能场景。"
+    },
+    {
+      "level": "install",
+      "status": "unverified",
+      "note": "尚未在 AgentMatter 测试环境安装"
+    },
+    {
+      "level": "function",
+      "status": "unverified",
+      "note": "尚未执行功能场景"
+    }
+  ],
+  "structure": [
+    "skills/<name>/SKILL.md",
+    "spec/",
+    "template/"
+  ],
+  "featured": true,
+  "taxonomy": {
+    "primaryTopic": "productivity",
+    "secondaryTopics": [
+      "frontend-design",
+      "writing-docs"
+    ],
+    "facets": {
+      "workflow": [
+        "implementation",
+        "documentation"
+      ],
+      "output": [
+        "code",
+        "document",
+        "design"
+      ]
+    }
+  },
+  "detail": {
+    "introduction": "Anthropic 公开的 Agent Skills 目录，覆盖文档、设计、开发和内容工作流。 它的核心内容集中在文档处理、前端设计、Skill 创建、MCP 开发，适合先从官方仓库说明和最小使用范围开始评估。",
+    "githubDescription": "Public repository for Agent Skills.",
+    "suitableFor": [
+      "希望把成熟工作方法作为可复用能力接入 Agent",
+      "当前任务需要文档处理或前端设计"
+    ],
+    "notSuitableFor": [
+      "需要开箱即用的托管服务或独立应用",
+      "希望在未阅读仓库说明或未核对权限的情况下直接用于生产环境"
+    ],
+    "readmeSummary": [
+      "项目定位：Anthropic 公开的 Agent Skills 目录，覆盖文档、设计、开发和内容工作流。",
+      "公开特征：18 个 Skill、含模板与规范、合集。",
+      "主要获取路径：浏览 Skills；具体命令和要求以仓库当前说明为准。"
+    ],
+    "capabilityDetails": [
+      {
+        "name": "文档处理",
+        "description": "把“文档处理”整理为 Agent 可重复调用的说明、步骤或配套资源。",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+      },
+      {
+        "name": "前端设计",
+        "description": "把“前端设计”整理为 Agent 可重复调用的说明、步骤或配套资源。",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+      },
+      {
+        "name": "Skill 创建",
+        "description": "把“Skill 创建”整理为 Agent 可重复调用的说明、步骤或配套资源。",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+      },
+      {
+        "name": "MCP 开发",
+        "description": "把“MCP 开发”整理为 Agent 可重复调用的说明、步骤或配套资源。",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+      }
+    ],
+    "structureDetails": [
+      {
+        "path": "skills/<name>/SKILL.md",
+        "role": "Skill 的入口说明与执行规则",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+      },
+      {
+        "path": "spec/",
+        "role": "仓库中的关键组件或资源目录",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/spec"
+      },
+      {
+        "path": "template/",
+        "role": "仓库中的关键组件或资源目录",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/template"
+      }
+    ],
+    "dataBoundaries": [
+      {
+        "label": "运行边界",
+        "description": "Skill 会在所选 Agent 宿主的权限范围内工作；启用脚本前应检查其文件、网络和命令访问范围。",
+        "risk": "medium",
+        "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+      }
+    ],
+    "licenses": [
+      {
+        "scope": "各子目录或组件",
+        "spdx": "以组件内 LICENSE 为准",
+        "sourceUrl": "https://github.com/anthropics/skills"
+      }
+    ],
+    "maintenance": {
+      "lastPush": "2026-08-13T18:09:56Z",
+      "archived": false,
+      "releaseUrl": "https://github.com/anthropics/skills/releases",
+      "note": "本次收录时仓库近期仍有公开更新；活跃度不等同于质量或兼容性保证。"
+    },
+    "evidence": [
+      {
+        "label": "GitHub 仓库",
+        "url": "https://github.com/anthropics/skills"
+      },
+      {
+        "label": "README / 项目说明",
+        "url": "https://github.com/anthropics/skills#readme"
+      },
+      {
+        "label": "收录组件路径",
+        "url": "https://github.com/anthropics/skills/tree/HEAD/skills"
+      }
+    ],
+    "categoryFacts": [
+      {
+        "label": "Skill 形态",
+        "value": "官方目录"
+      },
+      {
+        "label": "主要能力",
+        "value": "文档处理、前端设计、Skill 创建、MCP 开发"
+      },
+      {
+        "label": "明确宿主",
+        "value": "Claude Code、Claude.ai、Claude API"
+      }
+    ],
+    "installationGuide": {
+      "summary": "用一句话说明这个项目的推荐安装路径，以及完成安装后用户可以直接做什么。",
+      "prerequisites": [
+        "列出安装前必须具备的环境",
+        "列出用户需要提前准备的账号、文件或权限"
+      ],
+      "verification": "给出一个最小可执行任务，并说明看到什么结果才代表安装成功。",
+      "agentInstallPrompt": "请帮我安装这个资源。项目地址：https://github.com/owner/repo。请先阅读 README 和安装文件，按项目提供的方式安装，完成后运行最小验证并告诉我结果；遇到需要授权或提供凭据的步骤时先询问我。",
+      "notes": [
+        "只保留会直接影响安装或使用结果的注意事项"
+      ]
+    },
+    "tutorialSteps": [
+      {
+        "title": "执行安装",
+        "description": "使用仓库提供的准确命令或配置完成安装。"
+      },
+      {
+        "title": "完成项目设置",
+        "description": "根据当前项目补齐路径、凭据或首次运行配置。"
+      },
+      {
+        "title": "验证是否可用",
+        "description": "运行最小任务并对照 installationGuide.verification 检查结果。"
+      }
+    ]
+  },
+  "seo": {
+    "primaryKeyword": "Anthropic Skills 安装教程",
+    "title": "Anthropic Skills 安装教程：核心用途 Skill",
+    "description": "Anthropic Skills 是一个面向 AI Agent 的开源资源。本页提供基于 GitHub 仓库整理的项目介绍、完整安装步骤、使用教程与必要注意事项。",
+    "searchIntent": "installation",
+    "secondaryKeywords": [
+      "Anthropic Skills",
+      "Anthropic Skills 安装",
+      "核心用途 Skill"
+    ],
+    "titleCandidates": [
+      "Anthropic Skills 安装教程：核心用途 Skill",
+      "Anthropic Skills 怎么安装？完整使用教程"
+    ],
+    "selectionReason": "最终标题包含完整项目名、核心用途、资源类型与主要搜索意图，并且没有重复网站品牌名。"
+  },
+  "localizations": {
+    "en": {
+      "subtype": "Official catalog",
+      "summary": "Anthropic's public Agent Skills catalog covering document, design, development, and content workflows.",
+      "license": "Multiple licenses",
+      "facts": [
+        "18 Skills",
+        "Templates and specifications",
+        "Collection"
+      ],
+      "capabilities": [
+        "Document workflows",
+        "Frontend design",
+        "Skill creation",
+        "MCP development"
+      ],
+      "compatibilities": [
+        {
+          "host": "Claude Code"
+        },
+        {
+          "host": "Claude.ai"
+        },
+        {
+          "host": "Claude API"
+        }
+      ],
+      "acquisitions": [
+        {
+          "label": "Browse Skills"
+        }
+      ],
+      "verifications": [
+        {
+          "note": "Repository identity, documentation, license, and key structure were reviewed.",
+          "environment": "Public GitHub repository and project documentation",
+          "result": "Repository identity, public documentation, license marker, and key paths were reviewed; installation and functional behavior were not tested."
+        },
+        {
+          "note": "Not installed in the AgentMatter test environment."
+        },
+        {
+          "note": "No functional scenario was executed."
+        }
+      ],
+      "detail": {
+        "introduction": "Anthropic's public Agent Skills catalog covering document, design, development, and content workflows. Its core areas include Document workflows, Frontend design, Skill creation, MCP development. Start with the repository documentation and the smallest practical scope before adopting it broadly.",
+        "githubDescription": "Public repository for Agent Skills.",
+        "suitableFor": [
+          "You want to add a reusable professional workflow to an agent",
+          "Your current task needs Document workflows or Frontend design"
+        ],
+        "notSuitableFor": [
+          "You need a hosted service or standalone application",
+          "You want to use it in production without reading the repository documentation or reviewing permissions"
+        ],
+        "readmeSummary": [
+          "Project focus: Anthropic's public Agent Skills catalog covering document, design, development, and content workflows.",
+          "Published characteristics: 18 Skills, Templates and specifications, Collection.",
+          "Primary acquisition path: Browse Skills. Check the current repository for exact commands and requirements."
+        ],
+        "capabilityDetails": [
+          {
+            "name": "Document workflows",
+            "description": "Adds a repeatable workflow or integration for Document workflows.",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          },
+          {
+            "name": "Frontend design",
+            "description": "Adds a repeatable workflow or integration for Frontend design.",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          },
+          {
+            "name": "Skill creation",
+            "description": "Adds a repeatable workflow or integration for Skill creation.",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          },
+          {
+            "name": "MCP development",
+            "description": "Adds a repeatable workflow or integration for MCP development.",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          }
+        ],
+        "structureDetails": [
+          {
+            "path": "skills/<name>/SKILL.md",
+            "role": "A key implementation, configuration, or documentation path in the repository.",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          },
+          {
+            "path": "spec/",
+            "role": "A key implementation, configuration, or documentation path in the repository.",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          },
+          {
+            "path": "template/",
+            "role": "A key implementation, configuration, or documentation path in the repository.",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          }
+        ],
+        "dataBoundaries": [
+          {
+            "label": "Runtime boundary",
+            "description": "A Skill runs within the permissions of its agent host. Review file, network, and command access before enabling scripts.",
+            "risk": "medium",
+            "evidenceUrl": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          }
+        ],
+        "licenses": [
+          {
+            "scope": "Each component",
+            "spdx": "Multiple licenses",
+            "sourceUrl": "https://github.com/anthropics/skills/blob/HEAD/LICENSE"
+          }
+        ],
+        "maintenance": {
+          "lastPush": "2026-08-13T18:09:56Z",
+          "archived": false,
+          "releaseUrl": "https://github.com/anthropics/skills/releases",
+          "note": "The repository was publicly accessible when cataloged. Recent activity does not by itself guarantee quality or compatibility."
+        },
+        "evidence": [
+          {
+            "label": "GitHub repository",
+            "url": "https://github.com/anthropics/skills"
+          },
+          {
+            "label": "README and project documentation",
+            "url": "https://github.com/anthropics/skills#readme"
+          },
+          {
+            "label": "Cataloged component path",
+            "url": "https://github.com/anthropics/skills/tree/HEAD/skills"
+          }
+        ],
+        "categoryFacts": [
+          {
+            "label": "Skill format",
+            "value": "Official catalog"
+          },
+          {
+            "label": "Primary capabilities",
+            "value": "Document workflows, Frontend design, Skill creation, MCP development"
+          },
+          {
+            "label": "Supported hosts",
+            "value": "Claude Code, Claude.ai, Claude API"
+          }
+        ],
+        "installationGuide": {
+          "summary": "Explain the recommended installation path for this project and what the user can do immediately after setup.",
+          "prerequisites": [
+            "List the required runtime",
+            "List any account, file, credential, or permission that must be prepared"
+          ],
+          "verification": "Provide a minimal executable task and describe the result that confirms a successful installation.",
+          "agentInstallPrompt": "Help me install this resource from https://github.com/owner/repo. Read the README and installation files, use the project's documented method, run a minimal verification, and report the result. Ask before requesting credentials, additional permissions, overwriting files, or performing risky actions.",
+          "notes": [
+            "Keep only notes that directly affect installation or use"
+          ]
+        },
+        "tutorialSteps": [
+          {
+            "title": "Run the installation",
+            "description": "Use the exact command or configuration from repository evidence."
+          },
+          {
+            "title": "Complete project setup",
+            "description": "Configure paths, credentials, or first-run settings required by this project."
+          },
+          {
+            "title": "Verify the result",
+            "description": "Run a minimal task and compare the result with installationGuide.verification."
+          }
+        ]
+      },
+      "seo": {
+        "primaryKeyword": "Anthropic Skills installation guide",
+        "title": "Anthropic Skills Installation Guide: Core Use Skill",
+        "description": "Learn what Anthropic Skills does, how to install it from GitHub, how to verify the setup, and what to review before using it with an AI agent.",
+        "searchIntent": "installation",
+        "secondaryKeywords": [
+          "Anthropic Skills",
+          "install Anthropic Skills",
+          "AI Agent Skill"
+        ],
+        "titleCandidates": [
+          "Anthropic Skills Installation Guide: Core Use Skill",
+          "How to Install and Use Anthropic Skills"
+        ],
+        "selectionReason": "The selected title includes the exact project name, resource type, concrete purpose, and installation intent without repeating the AgentMatter brand."
+      }
+    }
+  }
+}

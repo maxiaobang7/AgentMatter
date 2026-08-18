@@ -1,0 +1,1640 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[a-z0-9][a-z0-9._/-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,38})$"
+    },
+    "repo": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-z0-9._-]+$"
+    },
+    "componentPath": {
+      "type": "string",
+      "maxLength": 300,
+      "pattern": "^(?!\\/)(?!.*\\.\\.)(?!.*\\\\).+$"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "skills",
+        "dsh",
+        "plugins",
+        "mcp",
+        "prompts"
+      ]
+    },
+    "taxonomy": {
+      "type": "object",
+      "properties": {
+        "primaryTopic": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "secondaryTopics": {
+          "maxItems": 3,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "facets": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "enum": [
+              "workflow",
+              "output",
+              "surface",
+              "extension",
+              "scope",
+              "deployment",
+              "transport",
+              "authentication",
+              "content"
+            ]
+          },
+          "additionalProperties": {
+            "minItems": 1,
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          }
+        }
+      },
+      "required": [
+        "primaryTopic"
+      ],
+      "additionalProperties": false
+    },
+    "subtype": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "officialKind": {
+      "type": "string",
+      "enum": [
+        "platform",
+        "publisher",
+        "community"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 500
+    },
+    "stars": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "language": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+    },
+    "compatibilities": {
+      "maxItems": 40,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "documented",
+              "community",
+              "inferred"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "evidenceUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "host",
+          "level"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "facts": {
+      "minItems": 1,
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      }
+    },
+    "capabilities": {
+      "minItems": 1,
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      }
+    },
+    "acquisitions": {
+      "minItems": 1,
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "install",
+              "connect",
+              "copy",
+              "learn",
+              "browse"
+            ]
+          },
+          "host": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "command": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "config": {
+            "type": "string",
+            "maxLength": 12000
+          },
+          "uninstall": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "evidenceUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "requirements": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          }
+        },
+        "required": [
+          "label",
+          "mode"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "verifications": {
+      "maxItems": 20,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "metadata",
+              "install",
+              "function"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "unverified"
+            ]
+          },
+          "checkedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+              },
+              {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "evidenceUrls": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "result": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "level",
+          "status",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "permissions": {
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      }
+    },
+    "structure": {
+      "maxItems": 50,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      }
+    },
+    "limitations": {
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      }
+    },
+    "featured": {
+      "type": "boolean"
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "primaryKeyword": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 300
+        },
+        "searchIntent": {
+          "type": "string",
+          "enum": [
+            "installation",
+            "configuration",
+            "usage",
+            "overview",
+            "learning"
+          ]
+        },
+        "secondaryKeywords": {
+          "minItems": 1,
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          }
+        },
+        "titleCandidates": {
+          "minItems": 2,
+          "maxItems": 5,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 120
+          }
+        },
+        "selectionReason": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "primaryKeyword",
+        "title",
+        "description",
+        "searchIntent",
+        "secondaryKeywords"
+      ],
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "generatedBy": {
+          "type": "string",
+          "const": "codex"
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+        },
+        "sourceUrls": {
+          "minItems": 1,
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "model": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "reviewedBy": {
+          "type": "string",
+          "maxLength": 100
+        }
+      },
+      "required": [
+        "generatedBy",
+        "generatedAt",
+        "sourceUrls"
+      ],
+      "additionalProperties": false
+    },
+    "detail": {
+      "type": "object",
+      "properties": {
+        "introduction": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 1200
+        },
+        "githubDescription": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "suitableFor": {
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "notSuitableFor": {
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "readmeSummary": {
+          "minItems": 1,
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "capabilityDetails": {
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "evidenceUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "name",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "installationGuide": {
+          "type": "object",
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 1000
+            },
+            "prerequisites": {
+              "minItems": 1,
+              "maxItems": 12,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "verification": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 1000
+            },
+            "agentInstallPrompt": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 4000
+            },
+            "notes": {
+              "maxItems": 12,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          },
+          "required": [
+            "summary",
+            "prerequisites",
+            "verification"
+          ],
+          "additionalProperties": false
+        },
+        "tutorialSteps": {
+          "minItems": 1,
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "title",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "useCases": {
+          "minItems": 1,
+          "maxItems": 12,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "title",
+              "description"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "review": {
+          "type": "object",
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 1200
+            },
+            "strengths": {
+              "minItems": 1,
+              "maxItems": 12,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "limitations": {
+              "minItems": 1,
+              "maxItems": 12,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          },
+          "required": [
+            "summary",
+            "strengths",
+            "limitations"
+          ],
+          "additionalProperties": false
+        },
+        "media": {
+          "maxItems": 8,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[a-z0-9][a-z0-9._-]*$"
+              },
+              "src": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^\\/media\\/resources\\/[a-z0-9-]+\\/[a-z0-9._-]+\\/[a-f0-9]{24}\\.webp$"
+                  },
+                  {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                ]
+              },
+              "sourceUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "evidenceUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "alt": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 240
+              },
+              "caption": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 500
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "screenshot",
+                  "example",
+                  "diagram",
+                  "cover"
+                ]
+              },
+              "placement": {
+                "type": "string",
+                "enum": [
+                  "after-introduction",
+                  "after-capabilities",
+                  "after-installation",
+                  "after-use-cases",
+                  "after-review",
+                  "in-readme"
+                ]
+              },
+              "width": {
+                "type": "integer",
+                "minimum": 160,
+                "maximum": 8000
+              },
+              "height": {
+                "type": "integer",
+                "minimum": 120,
+                "maximum": 8000
+              }
+            },
+            "required": [
+              "id",
+              "src",
+              "sourceUrl",
+              "evidenceUrl",
+              "alt",
+              "kind",
+              "placement",
+              "width",
+              "height"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "structureDetails": {
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              },
+              "evidenceUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "path",
+              "role"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dataBoundaries": {
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "risk": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              },
+              "evidenceUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "label",
+              "description",
+              "risk"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "licenses": {
+          "maxItems": 20,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "scope": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "spdx": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "sourceUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "scope",
+              "spdx",
+              "sourceUrl"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "maintenance": {
+          "type": "object",
+          "properties": {
+            "lastPush": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "archived": {
+              "type": "boolean"
+            },
+            "latestRelease": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "releaseUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "lastPush",
+            "archived",
+            "note"
+          ],
+          "additionalProperties": false
+        },
+        "evidence": {
+          "minItems": 1,
+          "maxItems": 50,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "label",
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "categoryFacts": {
+          "maxItems": 30,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "required": [
+              "label",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "introduction",
+        "githubDescription",
+        "suitableFor",
+        "notSuitableFor",
+        "readmeSummary",
+        "capabilityDetails",
+        "structureDetails",
+        "dataBoundaries",
+        "licenses",
+        "maintenance",
+        "evidence",
+        "categoryFacts"
+      ],
+      "additionalProperties": false
+    },
+    "localizations": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "object",
+          "properties": {
+            "subtype": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 500
+            },
+            "license": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "facts": {
+              "minItems": 1,
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "capabilities": {
+              "minItems": 1,
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "compatibilities": {
+              "maxItems": 40,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "host": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 500
+                  }
+                },
+                "required": [
+                  "host"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "acquisitions": {
+              "minItems": 1,
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "requirements": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    }
+                  }
+                },
+                "required": [
+                  "label"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "verifications": {
+              "maxItems": 20,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "note": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "environment": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "result": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                },
+                "required": [
+                  "note"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "permissions": {
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "limitations": {
+              "maxItems": 30,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "detail": {
+              "type": "object",
+              "properties": {
+                "introduction": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 1200
+                },
+                "githubDescription": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "suitableFor": {
+                  "maxItems": 20,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  }
+                },
+                "notSuitableFor": {
+                  "maxItems": 20,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  }
+                },
+                "readmeSummary": {
+                  "minItems": 1,
+                  "maxItems": 30,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                },
+                "capabilityDetails": {
+                  "maxItems": 30,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      },
+                      "evidenceUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "installationGuide": {
+                  "type": "object",
+                  "properties": {
+                    "summary": {
+                      "type": "string",
+                      "minLength": 20,
+                      "maxLength": 1000
+                    },
+                    "prerequisites": {
+                      "minItems": 1,
+                      "maxItems": 12,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      }
+                    },
+                    "verification": {
+                      "type": "string",
+                      "minLength": 10,
+                      "maxLength": 1000
+                    },
+                    "agentInstallPrompt": {
+                      "type": "string",
+                      "minLength": 20,
+                      "maxLength": 4000
+                    },
+                    "notes": {
+                      "maxItems": 12,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      }
+                    }
+                  },
+                  "required": [
+                    "summary",
+                    "prerequisites",
+                    "verification"
+                  ],
+                  "additionalProperties": false
+                },
+                "tutorialSteps": {
+                  "minItems": 1,
+                  "maxItems": 12,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "useCases": {
+                  "minItems": 1,
+                  "maxItems": 12,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "review": {
+                  "type": "object",
+                  "properties": {
+                    "summary": {
+                      "type": "string",
+                      "minLength": 20,
+                      "maxLength": 1200
+                    },
+                    "strengths": {
+                      "minItems": 1,
+                      "maxItems": 12,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      }
+                    },
+                    "limitations": {
+                      "minItems": 1,
+                      "maxItems": 12,
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      }
+                    }
+                  },
+                  "required": [
+                    "summary",
+                    "strengths",
+                    "limitations"
+                  ],
+                  "additionalProperties": false
+                },
+                "media": {
+                  "maxItems": 8,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80,
+                        "pattern": "^[a-z0-9][a-z0-9._-]*$"
+                      },
+                      "src": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "pattern": "^\\/media\\/resources\\/[a-z0-9-]+\\/[a-z0-9._-]+\\/[a-f0-9]{24}\\.webp$"
+                          },
+                          {
+                            "type": "string",
+                            "format": "uri"
+                          }
+                        ]
+                      },
+                      "sourceUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "evidenceUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "alt": {
+                        "type": "string",
+                        "minLength": 4,
+                        "maxLength": 240
+                      },
+                      "caption": {
+                        "type": "string",
+                        "minLength": 4,
+                        "maxLength": 500
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "screenshot",
+                          "example",
+                          "diagram",
+                          "cover"
+                        ]
+                      },
+                      "placement": {
+                        "type": "string",
+                        "enum": [
+                          "after-introduction",
+                          "after-capabilities",
+                          "after-installation",
+                          "after-use-cases",
+                          "after-review",
+                          "in-readme"
+                        ]
+                      },
+                      "width": {
+                        "type": "integer",
+                        "minimum": 160,
+                        "maximum": 8000
+                      },
+                      "height": {
+                        "type": "integer",
+                        "minimum": 120,
+                        "maximum": 8000
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "src",
+                      "sourceUrl",
+                      "evidenceUrl",
+                      "alt",
+                      "kind",
+                      "placement",
+                      "width",
+                      "height"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "structureDetails": {
+                  "maxItems": 50,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 300
+                      },
+                      "role": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "evidenceUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "path",
+                      "role"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "dataBoundaries": {
+                  "maxItems": 30,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "description": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000
+                      },
+                      "risk": {
+                        "type": "string",
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ]
+                      },
+                      "evidenceUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "description",
+                      "risk"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "licenses": {
+                  "maxItems": 20,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "scope": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "spdx": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "sourceUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "scope",
+                      "spdx",
+                      "sourceUrl"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "maintenance": {
+                  "type": "object",
+                  "properties": {
+                    "lastPush": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                    },
+                    "archived": {
+                      "type": "boolean"
+                    },
+                    "latestRelease": {
+                      "type": "string",
+                      "maxLength": 100
+                    },
+                    "releaseUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "note": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  },
+                  "required": [
+                    "lastPush",
+                    "archived",
+                    "note"
+                  ],
+                  "additionalProperties": false
+                },
+                "evidence": {
+                  "minItems": 1,
+                  "maxItems": 50,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "url": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "url"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "categoryFacts": {
+                  "maxItems": 30,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "value"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "introduction",
+                "githubDescription",
+                "suitableFor",
+                "notSuitableFor",
+                "readmeSummary",
+                "capabilityDetails",
+                "structureDetails",
+                "dataBoundaries",
+                "licenses",
+                "maintenance",
+                "evidence",
+                "categoryFacts"
+              ],
+              "additionalProperties": false
+            },
+            "seo": {
+              "type": "object",
+              "properties": {
+                "primaryKeyword": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 120
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 120
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 40,
+                  "maxLength": 300
+                },
+                "searchIntent": {
+                  "type": "string",
+                  "enum": [
+                    "installation",
+                    "configuration",
+                    "usage",
+                    "overview",
+                    "learning"
+                  ]
+                },
+                "secondaryKeywords": {
+                  "minItems": 1,
+                  "maxItems": 12,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  }
+                },
+                "titleCandidates": {
+                  "minItems": 2,
+                  "maxItems": 5,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 120
+                  }
+                },
+                "selectionReason": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "primaryKeyword",
+                "title",
+                "description",
+                "searchIntent",
+                "secondaryKeywords"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subtype",
+            "summary",
+            "facts",
+            "capabilities",
+            "compatibilities",
+            "acquisitions",
+            "verifications",
+            "detail",
+            "seo"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "en"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "owner",
+    "repo",
+    "category",
+    "subtype",
+    "officialKind",
+    "summary",
+    "stars",
+    "license",
+    "updatedAt",
+    "compatibilities",
+    "facts",
+    "capabilities",
+    "acquisitions",
+    "verifications",
+    "detail"
+  ],
+  "additionalProperties": false
+}
