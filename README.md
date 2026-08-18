@@ -54,7 +54,7 @@ pnpm build
 pnpm start
 ```
 
-正式网址统一为 `https://www.agentmatter.net`，根域名 301 跳转到 `www`。`NEXT_PUBLIC_SITE_URL` 必须在构建前设置；生产服务只监听 `127.0.0.1`，由宝塔 Nginx 对外提供 HTTPS。完整步骤与只读冒烟测试见 [宝塔部署说明](docs/deployment/baota.md)。
+正式网址统一为 `https://www.agentmatter.net`，根域名 301 跳转到 `www`。`NEXT_PUBLIC_SITE_URL` 必须在构建前设置；生产服务只监听 `127.0.0.1`，由宝塔 Nginx 对外提供 HTTPS。完整步骤、生产配置模板、PM2/Nginx 文件、首次部署和安全更新脚本见 [宝塔部署说明](docs/deployment/baota.md) 与 [`deploy/baota`](deploy/baota/README.md)。
 
 ## 数据边界
 

@@ -2,6 +2,9 @@
   "name": "agentmatter",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke:production": "node scripts/smoke-production.mjs",
+    "deploy:preflight": "node scripts/deployment-preflight.mjs",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed-resources.ts",
     "schema:export": "tsx scripts/export-resource-schema.ts",
