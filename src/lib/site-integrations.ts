@@ -13,6 +13,20 @@ export function getBaiduAnalyticsId(environment: SiteIntegrationEnvironment = pr
   return value && baiduAnalyticsIdPattern.test(value) ? value : undefined;
 }
 
+export function buildBaiduAnalyticsLoader(siteId: string) {
+  if (!baiduAnalyticsIdPattern.test(siteId)) return undefined;
+
+  return `
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?${siteId}";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  `;
+}
+
 export function buildSiteVerification(environment: SiteIntegrationEnvironment = process.env): Metadata["verification"] {
   const google = optionalValue(environment.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION);
   const baidu = optionalValue(environment.NEXT_PUBLIC_BAIDU_SITE_VERIFICATION);

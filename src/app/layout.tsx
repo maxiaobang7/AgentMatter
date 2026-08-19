@@ -8,13 +8,13 @@ import "./admin.css";
 import "./admin-seo.css";
 import "./admin-submissions.css";
 import "./language.css";
+import { BaiduAnalyticsHead } from "@/components/baidu-analytics-head";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { SiteIntegrations } from "@/components/site-integrations";
 import { absoluteUrl, getSiteUrl, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_TITLE } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/server-locale";
-import { buildSiteVerification } from "@/lib/site-integrations";
+import { buildBaiduAnalyticsLoader, buildSiteVerification, getBaiduAnalyticsId } from "@/lib/site-integrations";
 
 const themeInitializationScript = `
   (() => {
@@ -61,6 +61,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const locale = await getRequestLocale();
+  const baiduAnalyticsId = getBaiduAnalyticsId();
+  const baiduAnalyticsLoader = baiduAnalyticsId ? buildBaiduAnalyticsLoader(baiduAnalyticsId) : undefined;
   const localizedDescription = locale === "zh" ? "发现和使用来自 GitHub 的 Skills、DSH 插件、Agent 插件、MCP 服务器与 Prompt 开源资源。" : SITE_DESCRIPTION;
   const siteJsonLd = {
     "@context": "https://schema.org",
@@ -94,13 +96,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang={locale === "zh" ? "zh-CN" : "en"} data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body>
+        {baiduAnalyticsLoader ? <BaiduAnalyticsHead loader={baiduAnalyticsLoader} /> : null}
         <Script id="agentmatter-theme" strategy="beforeInteractive">{themeInitializationScript}</Script>
         <JsonLd data={siteJsonLd} />
         <a className="skip-link" href="#main-content">{locale === "zh" ? "跳到主要内容" : "Skip to main content"}</a>
         <SiteHeader locale={locale} />
         <main id="main-content">{children}</main>
         <SiteFooter locale={locale} />
-        <SiteIntegrations />
       </body>
     </html>
   );

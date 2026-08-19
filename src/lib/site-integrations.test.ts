@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSiteVerification, getBaiduAnalyticsId } from "@/lib/site-integrations";
+import { buildBaiduAnalyticsLoader, buildSiteVerification, getBaiduAnalyticsId } from "@/lib/site-integrations";
 
 describe("site integrations", () => {
   it("accepts a valid Baidu Analytics site id", () => {
@@ -8,6 +8,18 @@ describe("site integrations", () => {
 
   it("does not render an invalid Baidu Analytics site id", () => {
     expect(getBaiduAnalyticsId({ NEXT_PUBLIC_BAIDU_ANALYTICS_ID: "<script>" })).toBeUndefined();
+  });
+
+  it("builds Baidu's detector-friendly asynchronous loader", () => {
+    const loader = buildBaiduAnalyticsLoader("a485b1bdb972bcdb91e8f3d328ed6790");
+
+    expect(loader).toContain('var _hmt = _hmt || [];');
+    expect(loader).toContain('hm.src = "https://hm.baidu.com/hm.js?a485b1bdb972bcdb91e8f3d328ed6790";');
+    expect(loader).toContain('s.parentNode.insertBefore(hm, s);');
+  });
+
+  it("does not build a loader for an invalid site id", () => {
+    expect(buildBaiduAnalyticsLoader('";alert(1)//')).toBeUndefined();
   });
 
   it("builds Google, Baidu, and Bing verification metadata", () => {
