@@ -29,6 +29,6 @@ pnpm ops:publish operations/drafts/example.json update
 
 ## 正文配图
 
-资源草稿可以在 `detail.media` 中声明来自 GitHub 仓库的截图、示例图或流程图。运行 `pnpm ops:media <draft>` 后，图片会经过服务器解码、缩放和 WebP 转换，保存到 `AGENTMATTER_MEDIA_DIR`，草稿中的远程地址会替换为站内内容寻址地址。媒体上传和媒体读回都成功后再发布资源。
+资源草稿可以在 `detail.media` 中声明来自 GitHub 仓库的截图、示例图或流程图。运行 `pnpm ops:media <draft>` 后，脚本必须先在本地解码图片、限制最长边、压缩并转换为 WebP；只有本地 WebP 的格式、尺寸和文件大小校验通过后，才允许上传。服务器保存到 `AGENTMATTER_MEDIA_DIR`，草稿中的远程或本地暂存地址会替换为站内内容寻址地址。媒体上传和媒体读回都成功后再发布资源。
 
-自动任务只能在仓库确有说明性图片时添加配图。没有合格图片时不生成 `media` 字段。
+优先使用仓库作者提供的说明性图片。没有合格图片时，可以截取对应 GitHub 仓库或组件 README 的相关区域；不得使用徽章、头像、纯 Logo 或与正文无关的装饰图。自动任务不得直接把 GitHub 远程图片地址作为最终正文地址，也不得绕过本地 WebP 处理步骤。

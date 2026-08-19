@@ -37,6 +37,7 @@ yarn-error.log*
 operations/inventory/current.json
 operations/drafts/*.json
 operations/runs/*.json
+/operations/media-staging/
 /storage/media/
 /artifacts/
 /agentmatter-scaffold/

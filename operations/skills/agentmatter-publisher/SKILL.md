@@ -21,7 +21,7 @@ description: 为 AgentMatter 从 GitHub 发现、研究、生成、校验并发�
 
 检查 README、`assets/`、`docs/`、示例目录和仓库公开截图。只选择能说明界面、输出结果、工作流程或典型使用场景的图片，最多 3 张。排除徽章、头像、纯 Logo、社交分享图、重复图和无法说明产品的装饰图。
 
-每张图记录 `src`、`sourceUrl`、`evidenceUrl`、中文 `alt`、可选 `caption`、`kind`、`placement`、`width` 和 `height`。初稿的 `src` 可使用 GitHub 原始图片地址；完成初稿后运行 `pnpm ops:media <draft>`，让服务器解码、缩放、转成 WebP 并读回媒体记录。没有合格配图时不要生成 `media` 字段。
+每张图记录 `src`、`sourceUrl`、`evidenceUrl`、中文 `alt`、可选 `caption`、`kind`、`placement`、`width` 和 `height`。优先使用作者放在仓库中的说明图；没有合格图片时，截取对应 GitHub 仓库或组件 README 的相关区域。初稿的 `src` 可使用 GitHub 原始图片地址或 `operations/media-staging/` 中的本地截图；完成初稿后必须运行 `pnpm ops:media <draft>`。脚本先在本地解码、限制最长边、压缩并转换为 WebP，校验通过后才上传和读回媒体记录。不得把远程图片地址直接留在最终正文中，也不得跳过本地 WebP 处理。
 
 ## 4. 生成资源 JSON
 
@@ -47,7 +47,7 @@ description: 为 AgentMatter 从 GitHub 发现、研究、生成、校验并发�
 pnpm ops:media operations/drafts/<file>.json
 ```
 
-脚本会下载 GitHub 图片、上传站内 WebP、完成媒体读回，并把最终站内地址与真实尺寸写回草稿。然后运行：
+脚本会读取 GitHub 图片或受限暂存目录中的截图，在本地完成压缩与 WebP 转换，校验格式、尺寸和上传文件大小后再上传，随后完成媒体读回，并把最终站内地址与真实尺寸写回草稿。媒体回执中的 `localProcessing.mimeType` 必须为 `image/webp`。
 
 运行：
 

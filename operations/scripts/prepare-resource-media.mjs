@@ -1,6 +1,8 @@
-import { writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { api, loadResource } from "./common.mjs";
+import { compressImageToWebp } from "./media-processing.mjs";
 
 const githubHeaders = { "user-agent": "AgentMatter-Codex/1.0", accept: "image/*" };
 
@@ -30,10 +32,24 @@ async function downloadGitHubImage(value) {
   return { bytes, contentType: contentType.startsWith("image/") ? contentType : "application/octet-stream" };
 }
 
+async function readStagedMedia(value) {
+  const source = new URL(value);
+  if (source.protocol !== "file:") throw new Error("本地截图地址必须使用 file://");
+  const stagingRoot = path.resolve("operations/media-staging");
+  const target = path.resolve(fileURLToPath(source));
+  if (target !== stagingRoot && !target.startsWith(`${stagingRoot}${path.sep}`)) {
+    throw new Error("本地截图只能来自 operations/media-staging");
+  }
+  const bytes = new Uint8Array(await readFile(target));
+  if (!bytes.byteLength || bytes.byteLength > 8_000_000) throw new Error("图片为空或超过 8 MB");
+  const contentType = path.extname(target).toLowerCase() === ".webp" ? "image/webp" : "image/png";
+  return { bytes, contentType };
+}
+
 async function main() {
   const { file, resource } = await loadResource(process.argv[2]);
   const media = resource.detail?.media ?? [];
-  const pending = media.filter((item) => /^https:\/\//.test(item.src));
+  const pending = media.filter((item) => /^(?:https|file):\/\//.test(item.src));
   if (!pending.length) {
     console.log(`media ready: ${resource.owner}/${resource.repo} (${media.length} local assets)`);
     return;
@@ -43,7 +59,13 @@ async function main() {
   for (const item of pending) {
     let downloaded;
     try {
-      downloaded = await downloadGitHubImage(item.src);
+      downloaded = item.src.startsWith("file:") ? await readStagedMedia(item.src) : await downloadGitHubImage(item.src);
+    } catch (error) {
+      throw new Error(`${item.id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+    let compressed;
+    try {
+      compressed = await compressImageToWebp(downloaded.bytes);
     } catch (error) {
       throw new Error(`${item.id}: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -51,7 +73,7 @@ async function main() {
     form.set("owner", resource.owner);
     form.set("repo", resource.repo);
     form.set("sourceUrl", item.sourceUrl);
-    form.set("file", new File([downloaded.bytes], `${item.id}.image`, { type: downloaded.contentType }));
+    form.set("file", new File([compressed.bytes], `${item.id}.webp`, { type: compressed.mimeType }));
     const uploaded = await api("/api/agent/v1/media", { method: "POST", body: form });
     const readback = await api(`/api/agent/v1/media/${uploaded.asset.assetKey}`);
     if (readback.asset.contentHash !== uploaded.asset.contentHash || readback.asset.publicUrl !== uploaded.asset.publicUrl) {
@@ -66,7 +88,18 @@ async function main() {
       localizedItem.width = uploaded.asset.width;
       localizedItem.height = uploaded.asset.height;
     }
-    readbacks.push({ id: item.id, ...uploaded.asset });
+    readbacks.push({
+      id: item.id,
+      sourceMimeType: downloaded.contentType,
+      localProcessing: {
+        mimeType: compressed.mimeType,
+        width: compressed.width,
+        height: compressed.height,
+        sourceBytes: compressed.sourceBytes,
+        uploadBytes: compressed.outputBytes,
+      },
+      ...uploaded.asset,
+    });
   }
 
   await writeFile(file, `${JSON.stringify(resource, null, 2)}\n`, "utf8");
