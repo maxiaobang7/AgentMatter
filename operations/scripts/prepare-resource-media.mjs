@@ -60,6 +60,12 @@ async function main() {
     item.src = uploaded.asset.publicUrl;
     item.width = uploaded.asset.width;
     item.height = uploaded.asset.height;
+    const localizedItem = resource.localizations?.en?.detail?.media?.find((candidate) => candidate.id === item.id);
+    if (localizedItem) {
+      localizedItem.src = uploaded.asset.publicUrl;
+      localizedItem.width = uploaded.asset.width;
+      localizedItem.height = uploaded.asset.height;
+    }
     readbacks.push({ id: item.id, ...uploaded.asset });
   }
 

@@ -1,12 +1,16 @@
 import type { NextConfig } from "next";
 
+const baiduAnalyticsEnabled = /^[a-f0-9]{32}$/i.test(process.env.NEXT_PUBLIC_BAIDU_ANALYTICS_ID?.trim() ?? "");
+const scriptSources = ["'self'", "'unsafe-inline'", ...(baiduAnalyticsEnabled ? ["https://hm.baidu.com", "https://hmcdn.baidu.com"] : [])];
+const connectSources = ["'self'", ...(baiduAnalyticsEnabled ? ["https://hm.baidu.com"] : [])];
+
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src ${scriptSources.join(" ")}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data: https:",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  `connect-src ${connectSources.join(" ")}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

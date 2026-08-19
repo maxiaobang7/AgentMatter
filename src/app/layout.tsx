@@ -11,10 +11,11 @@ import "./language.css";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteIntegrations } from "@/components/site-integrations";
 import { absoluteUrl, getSiteUrl, SITE_DESCRIPTION, SITE_KEYWORDS, SITE_NAME, SITE_TITLE } from "@/lib/seo";
 import { getRequestLocale } from "@/lib/server-locale";
+import { buildSiteVerification } from "@/lib/site-integrations";
 
-const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 const themeInitializationScript = `
   (() => {
     try {
@@ -55,7 +56,7 @@ export const metadata: Metadata = {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
-  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
+  verification: buildSiteVerification(),
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -99,6 +100,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <SiteHeader locale={locale} />
         <main id="main-content">{children}</main>
         <SiteFooter locale={locale} />
+        <SiteIntegrations />
       </body>
     </html>
   );

@@ -12,6 +12,7 @@ const required = (name) => {
   return value ?? "";
 };
 const isPlaceholder = (value) => /change_me|replace-with|your-|example\.com|至少|后台生成/i.test(value);
+const optionalValue = (name) => process.env[name]?.trim() ?? "";
 
 const [nodeMajor, nodeMinor] = process.versions.node.split(".").map(Number);
 if (nodeMajor < 20 || (nodeMajor === 20 && nodeMinor < 9)) {
@@ -59,6 +60,16 @@ if (bootstrapTokenHash && !/^[a-f0-9]{64}$/i.test(bootstrapTokenHash)) {
   errors.push("AGENT_API_TOKEN_SHA256 必须是 64 位十六进制 SHA-256");
 }
 
+const baiduAnalyticsId = optionalValue("NEXT_PUBLIC_BAIDU_ANALYTICS_ID");
+if (baiduAnalyticsId && !/^[a-f0-9]{32}$/i.test(baiduAnalyticsId)) {
+  errors.push("NEXT_PUBLIC_BAIDU_ANALYTICS_ID 必须是百度统计提供的 32 位十六进制站点 ID");
+}
+
+for (const name of ["NEXT_PUBLIC_BAIDU_SITE_VERIFICATION", "NEXT_PUBLIC_BING_SITE_VERIFICATION", "NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION"]) {
+  const value = optionalValue(name);
+  if (value && isPlaceholder(value)) errors.push(`${name} 仍是占位值`);
+}
+
 if (errors.length) {
   console.error("Production environment preflight failed:\n" + errors.map((error) => `- ${error}`).join("\n"));
   process.exit(1);
@@ -71,3 +82,5 @@ console.log("- MySQL: loopback, dedicated database user");
 console.log(`- Database pool: ${poolSize}`);
 console.log("- Admin/session credentials: configured");
 console.log("- Persistent media directory: configured");
+console.log(`- Baidu Analytics: ${baiduAnalyticsId ? "configured" : "disabled"}`);
+console.log(`- Webmaster verification tokens: ${["NEXT_PUBLIC_BAIDU_SITE_VERIFICATION", "NEXT_PUBLIC_BING_SITE_VERIFICATION", "NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION"].filter((name) => optionalValue(name)).length} configured`);
