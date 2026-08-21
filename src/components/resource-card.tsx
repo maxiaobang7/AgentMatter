@@ -3,22 +3,22 @@ import Image from "next/image";
 import { CATEGORY_INFO, CATEGORY_INFO_EN } from "@/data/resources";
 import { formatRelativeDate, formatStars } from "@/lib/format";
 import { canonicalIdentity, resourceHref } from "@/lib/resources";
-import { resourceFacetBadges, resourceTopicLabel } from "@/data/taxonomy";
-import type { Resource } from "@/lib/types";
+import { resourceFacetBadges, resourceTopicLabel, type CategoryTaxonomy } from "@/data/taxonomy";
+import type { CategorySlug, Resource } from "@/lib/types";
 import type { PublicLocale } from "@/lib/i18n";
 
 const officialLabels = { platform: "平台官方", publisher: "发布者仓库", community: "社区项目" } as const;
 const officialLabelsEn = { platform: "Official", publisher: "Publisher", community: "Community" } as const;
 
-export function ResourceCard({ resource, reasons, compact = false, variant, locale = "zh" }: { resource: Resource; reasons?: string[]; compact?: boolean; variant?: "table" | "search" | "catalog"; locale?: PublicLocale }) {
+export function ResourceCard({ resource, reasons, compact = false, variant, locale = "zh", taxonomyConfig }: { resource: Resource; reasons?: string[]; compact?: boolean; variant?: "table" | "search" | "catalog"; locale?: PublicLocale; taxonomyConfig?: Record<CategorySlug, CategoryTaxonomy> }) {
   const metadataVerified = resource.verifications.some((item) => item.level === "metadata" && item.status === "verified");
   const zh = locale === "zh";
   const info = (zh ? CATEGORY_INFO : CATEGORY_INFO_EN)[resource.category];
   const kindLabels = zh ? officialLabels : officialLabelsEn;
 
   if (variant === "catalog") {
-    const topic = resourceTopicLabel(resource, locale);
-    const badges = [...resourceFacetBadges(resource, locale, 2), ...resource.compatibilities.map((item) => item.host)];
+    const topic = resourceTopicLabel(resource, locale, taxonomyConfig);
+    const badges = [...resourceFacetBadges(resource, locale, 2, taxonomyConfig), ...resource.compatibilities.map((item) => item.host)];
     const uniqueBadges = [...new Set(badges)].slice(0, 4);
     const initials = resource.name.split(/\s+/).slice(0, 2).map((word) => word[0]).join("").toUpperCase();
 

@@ -5,7 +5,7 @@ import { ResourceCard } from "@/components/resource-card";
 import { SearchBox } from "@/components/search-box";
 import { CATEGORY_INFO, CATEGORY_INFO_EN } from "@/data/resources";
 import { categoryCounts, categorySlugs } from "@/lib/resources";
-import { getCatalogResources } from "@/server/catalog";
+import { getCatalogResources, getCatalogTaxonomy } from "@/server/catalog";
 import type { CategorySlug, Resource } from "@/lib/types";
 import styles from "./home.module.css";
 import { getRequestLocale } from "@/lib/server-locale";
@@ -53,7 +53,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
   const locale = await getRequestLocale();
   const zh = locale === "zh";
   const categoryInfo = zh ? CATEGORY_INFO : CATEGORY_INFO_EN;
-  const resources = await getCatalogResources(locale);
+  const [resources, taxonomyConfig] = await Promise.all([getCatalogResources(locale), getCatalogTaxonomy()]);
   const counts = categoryCounts(resources);
   const recommended = selectRecommendedResources(resources);
   const sort = query.sort === "stars" || query.sort === "updated" ? query.sort : undefined;
@@ -108,7 +108,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
 
           {sort ? <div className={styles.catalogState}><span>{zh ? `当前排序：${sort === "updated" ? "最近更新" : "Stars"}` : `Sorted by: ${sort === "updated" ? "Latest updates" : "Stars"}`}</span><Link href={localizedPath("/", locale)}>{zh ? "恢复默认" : "Reset"}</Link></div> : null}
 
-          <div className={styles.resourceGrid}>{featured.map((resource) => <ResourceCard key={resource.id} resource={resource} variant="catalog" locale={locale} />)}</div>
+          <div className={styles.resourceGrid}>{featured.map((resource) => <ResourceCard key={resource.id} resource={resource} variant="catalog" locale={locale} taxonomyConfig={taxonomyConfig} />)}</div>
 
           <div className={styles.catalogMore}>
             <Link href={localizedPath("/search", locale)}>{zh ? `查看全部 ${total} 个资源` : `View all ${total} resources`} <span aria-hidden="true">→</span></Link>

@@ -12,7 +12,7 @@ import { catalogHref, readQueryValue, readQueryValues, type CatalogQuery } from 
 import { allHosts, allSubtypes, categorySlugs, filterResources, isCategorySlug, resourceHref } from "@/lib/resources";
 import type { ResourceFacetKey } from "@/lib/types";
 import { absoluteUrl, breadcrumbJsonLd, SITE_NAME } from "@/lib/seo";
-import { getCatalogResources } from "@/server/catalog";
+import { getCatalogResources, getCatalogTaxonomy } from "@/server/catalog";
 import { getRequestLocale } from "@/lib/server-locale";
 import { localizedAlternates, localizedPath } from "@/lib/i18n";
 
@@ -52,8 +52,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const topic = readQueryValue(query.topic);
   const sort = readQueryValue(query.sort) === "updated" ? "updated" : "stars";
   const info = (zh ? CATEGORY_INFO : CATEGORY_INFO_EN)[category];
-  const taxonomy = getCategoryTaxonomy(category);
-  const resources = await getCatalogResources(locale);
+  const [resources, taxonomyConfig] = await Promise.all([getCatalogResources(locale), getCatalogTaxonomy()]);
+  const taxonomy = getCategoryTaxonomy(category, taxonomyConfig);
   const categoryResources = filterResources({ category }, resources);
   const selectedFacets = Object.fromEntries(taxonomy.facets.map((facet) => [facet.key, readQueryValues(query[facet.key])]).filter(([, values]) => values.length)) as Partial<Record<ResourceFacetKey, string[]>>;
   const current: CatalogQuery = { ...(host ? { host } : {}), ...(subtype ? { subtype } : {}), ...(topic ? { topic } : {}), ...(sort === "updated" ? { sort } : {}), ...selectedFacets };
@@ -85,10 +85,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   };
 
   const activePills: Array<{ key: string; label: string; href: string }> = [];
-  if (topic) activePills.push({ key: `topic-${topic}`, label: getTaxonomyLabel(category, "topic", topic, locale), href: catalogHref(basePath, current, { topic: undefined }) });
+  if (topic) activePills.push({ key: `topic-${topic}`, label: getTaxonomyLabel(category, "topic", topic, locale, taxonomyConfig), href: catalogHref(basePath, current, { topic: undefined }) });
   if (host) activePills.push({ key: `host-${host}`, label: `${zh ? "平台" : "Platform"}: ${host}`, href: catalogHref(basePath, current, { host: undefined }) });
   if (subtype) activePills.push({ key: `subtype-${subtype}`, label: `${zh ? "形态" : "Format"}: ${subtype}`, href: catalogHref(basePath, current, { subtype: undefined }) });
-  Object.entries(selectedFacets).forEach(([facetKey, values]) => values.forEach((value) => activePills.push({ key: `${facetKey}-${value}`, label: getTaxonomyLabel(category, facetKey as ResourceFacetKey, value, locale), href: catalogHref(basePath, current, { [facetKey]: values.filter((item) => item !== value) }) })));
+  Object.entries(selectedFacets).forEach(([facetKey, values]) => values.forEach((value) => activePills.push({ key: `${facetKey}-${value}`, label: getTaxonomyLabel(category, facetKey as ResourceFacetKey, value, locale, taxonomyConfig), href: catalogHref(basePath, current, { [facetKey]: values.filter((item) => item !== value) }) })));
 
   return (
     <>
@@ -98,7 +98,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <div className="wide-shell">
           <div className="breadcrumb"><Link href={localizedPath("/", locale)}>{zh ? "首页" : "Home"}</Link><span>/</span><span>{info.label}</span></div>
           <div className="catalog-hero-grid"><div><h1>{info.label}</h1><p>{info.description}</p></div><SearchBox locale={locale} /></div>
-          <TopicFilterBar basePath={basePath} current={current} currentTopic={topic} label={browseLabel(category, locale)} topics={topicOptions} total={topicBaseCount} locale={locale} />
+          <TopicFilterBar basePath={basePath} current={current} currentTopic={topic} label={browseLabel(category, locale, taxonomyConfig)} topics={topicOptions} total={topicBaseCount} locale={locale} />
         </div>
       </section>
       <section className="catalog-workspace">
@@ -109,7 +109,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               <div><strong>{zh ? `找到 ${filtered.length} 个${info.label}` : `${filtered.length} ${info.label}`}</strong>{activePills.map((pill) => <Link className="active-filter" href={pill.href} key={pill.key}>{pill.label}<span aria-hidden="true">×</span></Link>)}{activePills.length ? <Link href={basePath}>{zh ? "清除全部" : "Clear all"}</Link> : null}</div>
               <div className="sort-links"><span>{zh ? "排序" : "Sort"}</span><Link className={sort === "stars" ? "active" : ""} href={catalogHref(basePath, current, { sort: undefined })}>{zh ? "热门优先" : "Popular"}</Link><Link className={sort === "updated" ? "active" : ""} href={catalogHref(basePath, current, { sort: "updated" })}>{zh ? "最近更新" : "Latest"}</Link></div>
             </div>
-            {filtered.length ? <div className="catalog-resource-grid">{filtered.map((resource) => <ResourceCard key={resource.id} resource={resource} variant="catalog" locale={locale} />)}</div> : <div className="empty-state"><strong>{zh ? "没有符合条件的资源" : "No matching resources"}</strong><p>{zh ? "尝试移除部分筛选，或提交一个 GitHub 项目。" : "Remove some filters or submit a GitHub project."}</p><Link className="button button-primary" href={localizedPath("/submit", locale)}>{zh ? "提交项目" : "Submit a project"}</Link></div>}
+            {filtered.length ? <div className="catalog-resource-grid">{filtered.map((resource) => <ResourceCard key={resource.id} resource={resource} variant="catalog" locale={locale} taxonomyConfig={taxonomyConfig} />)}</div> : <div className="empty-state"><strong>{zh ? "没有符合条件的资源" : "No matching resources"}</strong><p>{zh ? "尝试移除部分筛选，或提交一个 GitHub 项目。" : "Remove some filters or submit a GitHub project."}</p><Link className="button button-primary" href={localizedPath("/submit", locale)}>{zh ? "提交项目" : "Submit a project"}</Link></div>}
           </div>
         </div>
       </section>

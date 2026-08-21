@@ -166,18 +166,18 @@ function localized(label: LocalizedLabel, locale: PublicLocale) {
   return label[locale];
 }
 
-export function getCategoryTaxonomy(category: CategorySlug) {
-  return CATEGORY_TAXONOMY[category];
+export function getCategoryTaxonomy(category: CategorySlug, source: Record<CategorySlug, CategoryTaxonomy> = CATEGORY_TAXONOMY) {
+  return source[category];
 }
 
-export function getTaxonomyOption(category: CategorySlug, facet: "topic" | ResourceFacetKey, slug: string) {
-  const config = CATEGORY_TAXONOMY[category];
+export function getTaxonomyOption(category: CategorySlug, facet: "topic" | ResourceFacetKey, slug: string, source: Record<CategorySlug, CategoryTaxonomy> = CATEGORY_TAXONOMY) {
+  const config = source[category];
   const options = facet === "topic" ? config.topics : config.facets.find((item) => item.key === facet)?.options;
   return options?.find((item) => item.slug === slug);
 }
 
-export function getTaxonomyLabel(category: CategorySlug, facet: "topic" | ResourceFacetKey, slug: string, locale: PublicLocale) {
-  return getTaxonomyOption(category, facet, slug)?.label[locale] ?? slug;
+export function getTaxonomyLabel(category: CategorySlug, facet: "topic" | ResourceFacetKey, slug: string, locale: PublicLocale, source: Record<CategorySlug, CategoryTaxonomy> = CATEGORY_TAXONOMY) {
+  return getTaxonomyOption(category, facet, slug, source)?.label[locale] ?? slug;
 }
 
 export function getFacetLabel(category: CategorySlug, key: ResourceFacetKey, locale: PublicLocale) {
@@ -196,18 +196,18 @@ export function getResourceTaxonomy(resource: Resource): ResourceTaxonomy {
   return { primaryTopic: ranked[0]?.topic.slug ?? topics[0].slug, secondaryTopics: ranked.filter((item) => item.score > 0).slice(1, 3).map((item) => item.topic.slug) };
 }
 
-export function resourceTopicLabel(resource: Resource, locale: PublicLocale) {
-  return getTaxonomyLabel(resource.category, "topic", getResourceTaxonomy(resource).primaryTopic, locale);
+export function resourceTopicLabel(resource: Resource, locale: PublicLocale, source: Record<CategorySlug, CategoryTaxonomy> = CATEGORY_TAXONOMY) {
+  return getTaxonomyLabel(resource.category, "topic", getResourceTaxonomy(resource).primaryTopic, locale, source);
 }
 
-export function resourceFacetBadges(resource: Resource, locale: PublicLocale, limit = 3) {
+export function resourceFacetBadges(resource: Resource, locale: PublicLocale, limit = 3, source: Record<CategorySlug, CategoryTaxonomy> = CATEGORY_TAXONOMY) {
   const taxonomy = getResourceTaxonomy(resource);
   const badges = Object.entries(taxonomy.facets ?? {}).flatMap(([key, values]) =>
-    (values ?? []).map((value) => getTaxonomyLabel(resource.category, key as ResourceFacetKey, value, locale)),
+    (values ?? []).map((value) => getTaxonomyLabel(resource.category, key as ResourceFacetKey, value, locale, source)),
   );
   return [...new Set(badges)].slice(0, limit);
 }
 
-export function browseLabel(category: CategorySlug, locale: PublicLocale) {
-  return localized(CATEGORY_TAXONOMY[category].browseLabel, locale);
+export function browseLabel(category: CategorySlug, locale: PublicLocale, source: Record<CategorySlug, CategoryTaxonomy> = CATEGORY_TAXONOMY) {
+  return localized(source[category].browseLabel, locale);
 }

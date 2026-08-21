@@ -1,4 +1,4 @@
-import { ContentOperationError } from "@/server/content-service";
+import { ContentOperationError } from "@/server/content-errors";
 
 export function apiError(error: unknown) {
   if (error instanceof ContentOperationError) {

@@ -176,11 +176,7 @@ export const resourceSchema = resourceBaseSchema.extend({
   }
   if (resource.taxonomy) {
     const config = CATEGORY_TAXONOMY[resource.category];
-    const topicSlugs = new Set(config.topics.map((topic) => topic.slug));
     const selectedTopics = [resource.taxonomy.primaryTopic, ...(resource.taxonomy.secondaryTopics ?? [])];
-    for (const [index, topic] of selectedTopics.entries()) {
-      if (!topicSlugs.has(topic)) context.addIssue({ code: "custom", path: ["taxonomy", index === 0 ? "primaryTopic" : "secondaryTopics", ...(index === 0 ? [] : [index - 1])], message: `标签 ${topic} 不属于 ${resource.category} 主题词库` });
-    }
     if (new Set(selectedTopics).size !== selectedTopics.length) context.addIssue({ code: "custom", path: ["taxonomy"], message: "主主题与次主题不能重复" });
     for (const [facetKey, values] of Object.entries(resource.taxonomy.facets ?? {})) {
       const facet = config.facets.find((item) => item.key === facetKey);

@@ -53,9 +53,15 @@ describe("resourceSchema", () => {
     for (const resource of resources) expect(resourceSchema.safeParse(resource), resource.id).toMatchObject({ success: true });
   });
 
-  it("rejects taxonomy values outside the resource category vocabulary", () => {
+  it("accepts well-formed dynamic taxonomy topics for database validation", () => {
     const candidate = structuredClone(resources[0]);
     candidate.taxonomy = { primaryTopic: "browser-automation" };
+    expect(resourceSchema.safeParse(candidate).success).toBe(true);
+  });
+
+  it("rejects malformed dynamic taxonomy slugs", () => {
+    const candidate = structuredClone(resources[0]);
+    candidate.taxonomy = { primaryTopic: "Browser Automation" };
     expect(resourceSchema.safeParse(candidate).success).toBe(false);
   });
 

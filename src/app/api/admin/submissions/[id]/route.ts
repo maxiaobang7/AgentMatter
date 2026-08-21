@@ -14,5 +14,6 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const result = await executeStatement("UPDATE submissions SET status = ? WHERE id = ?", [parsed.data.status, Number(id)]);
   if (!result.affectedRows) return Response.json({ ok: false, error: "投稿不存在" }, { status: 404 });
   revalidatePath("/admin");
+  revalidatePath("/admin/submissions");
   return Response.json({ ok: true, status: parsed.data.status });
 }

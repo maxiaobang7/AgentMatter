@@ -3,9 +3,14 @@ import "server-only";
 import type { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import type { Resource } from "@/lib/types";
 import { resourceHref } from "@/lib/resources";
+import { nextResourceStatus, type AdminResourceStatusAction } from "@/lib/resource-status";
+import { ContentOperationError } from "@/server/content-errors";
 import { sha256, stableResourceKey } from "@/server/crypto";
 import { inTransaction, queryRows } from "@/server/db";
 import { normalizeSeoTitle } from "@/lib/seo-title";
+import { ensureTaxonomySeeded } from "@/server/taxonomy-service";
+
+export { ContentOperationError } from "@/server/content-errors";
 
 export type WriteAction = "draft" | "publish" | "update";
 
@@ -30,12 +35,6 @@ type OperationRow = RowDataPacket & {
   created_at: Date;
   completed_at: Date | null;
 };
-
-export class ContentOperationError extends Error {
-  constructor(message: string, public status = 400, public code = "content_operation_error") {
-    super(message);
-  }
-}
 
 function jsonValue<T>(value: string | T | null): T | null {
   if (!value) return null;
@@ -92,17 +91,32 @@ async function assertUniqueSeoTitle(connection: PoolConnection, resource: Resour
   if (duplicate) throw new ContentOperationError(`SEO 标题与 ${duplicate.stable_key} 重复，请重新生成`, 409, "duplicate_seo_title");
 }
 
+async function assertActiveTaxonomyTopics(connection: PoolConnection, resource: Resource) {
+  if (!resource.taxonomy) return;
+  const topics = [...new Set([resource.taxonomy.primaryTopic, ...(resource.taxonomy.secondaryTopics ?? [])])];
+  const placeholders = topics.map(() => "?").join(", ");
+  const [rows] = await connection.execute<(RowDataPacket & { slug: string })[]>(
+    `SELECT slug FROM taxonomy_topics WHERE category = ? AND active = 1 AND slug IN (${placeholders})`,
+    [resource.category, ...topics],
+  );
+  const active = new Set(rows.map((row) => row.slug));
+  const missing = topics.filter((topic) => !active.has(topic));
+  if (missing.length) throw new ContentOperationError(`能力领域不存在或已停用：${missing.join("、")}`, 422, "taxonomy_topic_invalid");
+}
+
 export async function writeResource(input: { operationId: string; action: WriteAction; resource: Resource; actor: string; note?: string }) {
   const stableKey = stableResourceKey(input.resource.owner, input.resource.repo, input.resource.componentPath);
   const payload = JSON.stringify(input.resource);
   const contentHash = sha256(payload);
   const requestHash = sha256(JSON.stringify({ action: input.action, stableKey, payload, note: input.note ?? "" }));
 
+  await ensureTaxonomySeeded();
   return inTransaction(async (connection) => {
     const replay = await beginOperation(connection, { operationId: input.operationId, action: input.action, requestHash, actor: input.actor });
     if (replay) return replay;
 
     await assertUniqueSeoTitle(connection, input.resource, stableKey);
+    await assertActiveTaxonomyTopics(connection, input.resource);
 
     const [existingRows] = await connection.execute<ResourceRow[]>("SELECT * FROM resources WHERE stable_key = ? LIMIT 1 FOR UPDATE", [stableKey]);
     const existing = existingRows[0];
@@ -184,6 +198,65 @@ export async function unpublishResource(input: { operationId: string; owner: str
       );
     }
     const result = { operationId: input.operationId, resourceId: resource.id, stableKey, status: "unpublished", changed: resource.status !== "unpublished" };
+    await finishOperation(connection, input.operationId, resource.id, result);
+    return result;
+  });
+}
+
+export async function changeResourceStatus(input: { operationId: string; resourceId: number; action: AdminResourceStatusAction; actor: string; note?: string }) {
+  const requestHash = sha256(JSON.stringify({ action: input.action, resourceId: input.resourceId, note: input.note ?? "" }));
+  return inTransaction(async (connection) => {
+    const replay = await beginOperation(connection, { operationId: input.operationId, action: input.action, requestHash, actor: input.actor });
+    if (replay) return replay;
+    const [rows] = await connection.execute<ResourceRow[]>("SELECT * FROM resources WHERE id = ? LIMIT 1 FOR UPDATE", [input.resourceId]);
+    const resource = rows[0];
+    if (!resource) throw new ContentOperationError("资源不存在", 404, "resource_not_found");
+    let targetStatus: ResourceRow["status"];
+    try {
+      targetStatus = nextResourceStatus(resource.status, input.action);
+    } catch (error) {
+      throw new ContentOperationError(error instanceof Error ? error.message : "资源状态转换无效", 409, "resource_status_invalid");
+    }
+
+    const promotePending = input.action === "draft" && Boolean(resource.pending_payload_json && resource.pending_content_hash);
+    const payload = promotePending ? resource.pending_payload_json! : resource.payload_json;
+    const contentHash = promotePending ? resource.pending_content_hash! : resource.content_hash;
+    const nextVersion = promotePending && contentHash !== resource.content_hash ? resource.version_number + 1 : resource.version_number;
+    const changed = resource.status !== targetStatus || promotePending;
+
+    if (changed) {
+      if (input.action === "archive") {
+        // Archiving is intentionally non-destructive: keep both the live payload
+        // and any pending revision so an administrator can restore the resource.
+        await connection.execute("UPDATE resources SET status = ? WHERE id = ?", [targetStatus, resource.id]);
+      } else {
+        await connection.execute(
+          "UPDATE resources SET status = ?, payload_json = ?, content_hash = ?, pending_payload_json = NULL, pending_content_hash = NULL, pending_updated_at = NULL, version_number = ? WHERE id = ?",
+          [targetStatus, typeof payload === "string" ? payload : JSON.stringify(payload), contentHash, nextVersion, resource.id],
+        );
+      }
+      if (nextVersion !== resource.version_number) {
+        await connection.execute(
+          "INSERT INTO resource_versions (resource_id, version_number, action, operation_id, payload_json, content_hash, actor) VALUES (?, ?, 'draft', ?, ?, ?, ?)",
+          [resource.id, nextVersion, input.operationId, typeof payload === "string" ? payload : JSON.stringify(payload), contentHash, input.actor],
+        );
+      }
+      await connection.execute(
+        "INSERT INTO audit_logs (resource_id, operation_id, action, actor, before_hash, after_hash, metadata_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [resource.id, input.operationId, input.action, input.actor, resource.content_hash, contentHash, JSON.stringify({ note: input.note ?? null, fromStatus: resource.status, toStatus: targetStatus, promotedPending: promotePending })],
+      );
+    }
+
+    const parsed = jsonValue<Resource>(payload);
+    const result = {
+      operationId: input.operationId,
+      resourceId: resource.id,
+      status: targetStatus,
+      version: nextVersion,
+      changed,
+      path: parsed ? resourceHref(parsed) : undefined,
+      contentHash,
+    };
     await finishOperation(connection, input.operationId, resource.id, result);
     return result;
   });

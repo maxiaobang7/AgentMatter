@@ -3,12 +3,14 @@ import "server-only";
 import { cache } from "react";
 import type { RowDataPacket } from "mysql2/promise";
 import { resources as staticResources } from "@/data/resources";
+import { CATEGORY_TAXONOMY } from "@/data/taxonomy";
 import { localizeResource, localizeResources } from "@/data/resource-localizations";
 import { resourceSchema } from "@/lib/resource-schema";
 import { getResource } from "@/lib/resources";
 import type { Resource } from "@/lib/types";
 import type { PublicLocale } from "@/lib/i18n";
 import { isDatabaseConfigured, queryRows } from "@/server/db";
+import { getDatabaseTaxonomy } from "@/server/taxonomy-service";
 
 type PayloadRow = RowDataPacket & { payload_json: string | Resource };
 
@@ -47,4 +49,14 @@ export const getCatalogResource = cache(async (owner: string, repo: string, comp
   );
   const resource = rows[0] ? decodePayload(rows[0].payload_json) : undefined;
   return resource && locale ? localizeResource(resource, locale) : resource;
+});
+
+export const getCatalogTaxonomy = cache(async () => {
+  if (!isDatabaseConfigured()) return CATEGORY_TAXONOMY;
+  try {
+    return await getDatabaseTaxonomy();
+  } catch (error) {
+    console.error("无法读取数据库能力领域，已回退到静态词库", error);
+    return CATEGORY_TAXONOMY;
+  }
 });
