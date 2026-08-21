@@ -23,6 +23,18 @@ const editorialDetailItem = z.object({
   title: shortText,
   description: z.string().trim().min(1).max(1000),
 });
+const promptDetailSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("standalone"),
+    text: z.string().trim().min(20).max(30_000),
+    placeholder: z.string().trim().min(1).max(500).optional(),
+    sourceUrl: githubUrl,
+  }).strict(),
+  z.object({
+    kind: z.enum(["collection", "guide"]),
+    sourceUrl: githubUrl.optional(),
+  }).strict(),
+]);
 
 const resourceBaseSchema = z.object({
   id: z.string().trim().min(1).max(180).regex(/^[a-z0-9][a-z0-9._/-]*$/i),
@@ -94,6 +106,7 @@ const resourceBaseSchema = z.object({
   detail: z.object({
     introduction: z.string().trim().min(20).max(1200),
     githubDescription: z.string().trim().max(500),
+    prompt: promptDetailSchema.optional(),
     suitableFor: z.array(shortText).max(20),
     notSuitableFor: z.array(shortText).max(20),
     readmeSummary: z.array(z.string().trim().min(1).max(2000)).min(1).max(30),
@@ -157,6 +170,10 @@ const resourceLocalizationSchema = z.object({
 export const resourceSchema = resourceBaseSchema.extend({
   localizations: z.object({ en: resourceLocalizationSchema }).strict().optional(),
 }).strict().superRefine((resource, context) => {
+  const standalonePrompt = resource.category === "prompts" && resource.detail.prompt?.kind === "standalone";
+  if (resource.detail.prompt && resource.category !== "prompts") {
+    context.addIssue({ code: "custom", path: ["detail", "prompt"], message: "Prompt 专用内容只能用于 prompts 分类" });
+  }
   if (resource.taxonomy) {
     const config = CATEGORY_TAXONOMY[resource.category];
     const topicSlugs = new Set(config.topics.map((topic) => topic.slug));
@@ -183,7 +200,7 @@ export const resourceSchema = resourceBaseSchema.extend({
   if (!sources.some((source) => source.toLowerCase().startsWith(expected))) {
     context.addIssue({ code: "custom", path: ["detail", "evidence"], message: "证据必须包含资源对应的 GitHub 仓库" });
   }
-  if (resource.provenance && !resource.detail.installationGuide) {
+  if (resource.provenance && !standalonePrompt && !resource.detail.installationGuide) {
     context.addIssue({ code: "custom", path: ["detail", "installationGuide"], message: "AI 生成资源必须提供项目专属安装指南" });
   }
   if (resource.provenance && !resource.seo) {
@@ -205,6 +222,12 @@ export const resourceSchema = resourceBaseSchema.extend({
     for (const message of seoTitleHardIssues(resource, english.seo.title)) {
       context.addIssue({ code: "custom", path: ["localizations", "en", "seo", "title"], message });
     }
+    const localizedPrompt = english.detail.prompt;
+    if (resource.detail.prompt?.kind !== localizedPrompt?.kind) {
+      context.addIssue({ code: "custom", path: ["localizations", "en", "detail", "prompt"], message: "中英文 Prompt 内容类型必须一致" });
+    } else if (resource.detail.prompt?.kind === "standalone" && localizedPrompt?.kind === "standalone" && resource.detail.prompt.sourceUrl !== localizedPrompt.sourceUrl) {
+      context.addIssue({ code: "custom", path: ["localizations", "en", "detail", "prompt", "sourceUrl"], message: "中英文单条 Prompt 必须使用相同的 GitHub 来源" });
+    }
   }
   if (resource.seo) {
     for (const message of seoTitleHardIssues(resource, resource.seo.title)) {
@@ -217,10 +240,10 @@ export const resourceSchema = resourceBaseSchema.extend({
       context.addIssue({ code: "custom", path: ["seo", "titleCandidates"], message: "候选标题必须包含最终选用的标题" });
     }
   }
-  if (resource.provenance && !resource.detail.installationGuide?.agentInstallPrompt) {
+  if (resource.provenance && !standalonePrompt && !resource.detail.installationGuide?.agentInstallPrompt) {
     context.addIssue({ code: "custom", path: ["detail", "installationGuide", "agentInstallPrompt"], message: "AI 生成资源必须提供可直接交给 Agent 的安装提示词" });
   }
-  if (resource.provenance && (!resource.detail.tutorialSteps || resource.detail.tutorialSteps.length < 2)) {
+  if (resource.provenance && !standalonePrompt && (!resource.detail.tutorialSteps || resource.detail.tutorialSteps.length < 2)) {
     context.addIssue({ code: "custom", path: ["detail", "tutorialSteps"], message: "AI 生成资源必须提供至少两个可执行安装步骤" });
   }
 });

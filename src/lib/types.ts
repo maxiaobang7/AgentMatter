@@ -154,9 +154,22 @@ export interface MaintenanceInfo {
   note: string;
 }
 
+export type PromptDetail =
+  | {
+      kind: "standalone";
+      text: string;
+      placeholder?: string;
+      sourceUrl: string;
+    }
+  | {
+      kind: "collection" | "guide";
+      sourceUrl?: string;
+    };
+
 export interface ResourceDetailContent {
   introduction: string;
   githubDescription: string;
+  prompt?: PromptDetail;
   suitableFor: string[];
   notSuitableFor: string[];
   readmeSummary: string[];

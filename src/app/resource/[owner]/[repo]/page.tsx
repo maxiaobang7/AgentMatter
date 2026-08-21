@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
 import { ResourceDetail } from "@/components/resource-detail";
+import { StandalonePromptDetail } from "@/components/standalone-prompt-detail";
 import { CATEGORY_INFO, CATEGORY_INFO_EN } from "@/data/resources";
 import { githubHref, resourceHref } from "@/lib/resources";
 import { absoluteUrl, breadcrumbJsonLd, getSiteUrl, resourceCanonicalUrl, resourceSeoDescription, resourceSeoKeywords, resourceSeoTitle, SITE_NAME } from "@/lib/seo";
 import { getCatalogResource } from "@/server/catalog";
 import { getRequestLocale } from "@/lib/server-locale";
 import { localizedAlternates, localizedPath } from "@/lib/i18n";
+import { getStandalonePrompt } from "@/lib/prompt-detail";
 
 type ResourcePageProps = {
   params: Promise<{ owner: string; repo: string }>;
@@ -45,7 +47,21 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
   const resource = await getCatalogResource(owner, repo, component, locale);
   if (!resource) notFound();
   const category = (locale === "zh" ? CATEGORY_INFO : CATEGORY_INFO_EN)[resource.category];
-  const softwareJsonLd = {
+  const standalonePrompt = getStandalonePrompt(resource);
+  const resourceJsonLd = standalonePrompt ? {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "@id": `${resourceCanonicalUrl(resource, locale)}#prompt`,
+    name: resource.name,
+    description: resource.summary,
+    text: standalonePrompt.text,
+    url: resourceCanonicalUrl(resource, locale),
+    isBasedOn: standalonePrompt.sourceUrl,
+    dateModified: resource.updatedAt,
+    inLanguage: locale === "zh" ? "zh-CN" : "en",
+    keywords: resourceSeoKeywords(resource, locale).join(", "),
+    isPartOf: { "@id": `${getSiteUrl()}/#website` },
+  } : {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     "@id": `${resourceCanonicalUrl(resource, locale)}#software`,
@@ -68,8 +84,10 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
         { name: category.label, path: localizedPath(`/${resource.category}`, locale) },
         { name: resource.name, path: resourceCanonicalUrl(resource, locale) },
       ])} />
-      <JsonLd data={softwareJsonLd} />
-      <ResourceDetail resource={resource} locale={locale} />
+      <JsonLd data={resourceJsonLd} />
+      {standalonePrompt
+        ? <StandalonePromptDetail resource={resource} prompt={standalonePrompt} locale={locale} />
+        : <ResourceDetail resource={resource} locale={locale} />}
     </>
   );
 }

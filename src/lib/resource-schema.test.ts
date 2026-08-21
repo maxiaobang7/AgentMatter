@@ -3,6 +3,52 @@ import { resources } from "@/data/resources";
 import { resourceSchema } from "@/lib/resource-schema";
 
 describe("resourceSchema", () => {
+  function generatedStandalonePrompt() {
+    const candidate = structuredClone(resources.find((resource) => resource.category === "prompts")!);
+    const sourceUrl = `https://github.com/${candidate.owner}/${candidate.repo}/blob/HEAD/README.md`;
+    candidate.detail.prompt = {
+      kind: "standalone" as const,
+      text: "请先分析问题中没有明确写出的假设，然后只提出一个最关键的问题。\n我的问题是：[粘贴你的问题]",
+      placeholder: "[粘贴你的问题]",
+      sourceUrl,
+    };
+    delete candidate.detail.installationGuide;
+    delete candidate.detail.tutorialSteps;
+    candidate.provenance = { generatedBy: "codex", generatedAt: new Date().toISOString(), sourceUrls: [`https://github.com/${candidate.owner}/${candidate.repo}`] };
+    candidate.seo = {
+      primaryKeyword: `${candidate.name} Prompt 使用指南`,
+      title: `${candidate.name} Prompt 使用指南：可直接复制的单条模板`,
+      description: `${candidate.name} 是一条可以直接复制使用的 Prompt。本页提供简短介绍、完整原文、问题占位符和经过核对的 GitHub 来源。`,
+      searchIntent: "usage",
+      secondaryKeywords: [candidate.name, "AI Prompt"],
+    };
+    const englishDetail = structuredClone(candidate.detail);
+    englishDetail.prompt = {
+      kind: "standalone" as const,
+      text: "Identify the assumptions in my question, then ask only one key follow-up.\nMy question is: [paste your question]",
+      placeholder: "[paste your question]",
+      sourceUrl,
+    };
+    candidate.localizations = { en: {
+      subtype: "Standalone prompt",
+      summary: `${candidate.name} is a standalone prompt that can be copied directly into a multi-turn AI conversation.`,
+      facts: ["Copy-ready prompt"],
+      capabilities: ["Question clarification"],
+      compatibilities: candidate.compatibilities.map((item) => ({ host: item.host })),
+      acquisitions: candidate.acquisitions.map((item) => ({ label: item.label, requirements: item.requirements })),
+      verifications: candidate.verifications.map(() => ({ note: "The public GitHub source was reviewed." })),
+      detail: englishDetail,
+      seo: {
+        primaryKeyword: `${candidate.name} Prompt guide`,
+        title: `${candidate.name} Prompt Guide: Copy the Complete Template`,
+        description: `Copy the complete ${candidate.name} Prompt, review its short introduction, replace the question placeholder, and open the verified GitHub source.`,
+        searchIntent: "usage",
+        secondaryKeywords: [candidate.name, "AI Prompt"],
+      },
+    } };
+    return candidate;
+  }
+
   it("accepts all static migration seeds", () => {
     for (const resource of resources) expect(resourceSchema.safeParse(resource), resource.id).toMatchObject({ success: true });
   });
@@ -130,6 +176,26 @@ describe("resourceSchema", () => {
       height: 675,
     }];
     expect(resourceSchema.safeParse(candidate).success).toBe(true);
+  });
+
+  it("accepts an AI-generated standalone Prompt without project installation sections", () => {
+    expect(resourceSchema.safeParse(generatedStandalonePrompt()).success).toBe(true);
+  });
+
+  it("rejects Prompt detail content outside the prompts category", () => {
+    const candidate = structuredClone(resources[0]);
+    candidate.detail.prompt = {
+      kind: "standalone",
+      text: "这是一段只应出现在 Prompts 分类中的完整提示词正文，长度足够用于数据校验。",
+      sourceUrl: `https://github.com/${candidate.owner}/${candidate.repo}/blob/HEAD/README.md`,
+    };
+    expect(resourceSchema.safeParse(candidate).success).toBe(false);
+  });
+
+  it("requires Chinese and English Prompt detail types to align", () => {
+    const candidate = generatedStandalonePrompt();
+    candidate.localizations!.en.detail.prompt = { kind: "collection" };
+    expect(resourceSchema.safeParse(candidate).success).toBe(false);
   });
 
   it("rejects unrelated remote images in editorial media", () => {

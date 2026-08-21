@@ -35,9 +35,11 @@ description: 为 AgentMatter 从 GitHub 发现、研究、生成、校验并发�
 
 中文主内容完成后，必须根据同一组 GitHub 事实生成 `localizations.en`。英文版本需要覆盖 subtype、summary、facts、capabilities、兼容宿主、获取标签、核验说明、限制、完整 detail 和独立英文 SEO。URL、命令、配置、证据、数字、许可证与日期必须与中文主内容完全一致；只翻译编辑文字。英文正文应按英文用户的阅读习惯自然重写，不能逐字硬译，也不能夹杂中文界面词。中文和英文安装提示词都要保留凭据、额外权限与覆盖文件时先确认的边界。
 
-详情正文依次提供项目介绍、核心功能、安装与使用、使用场景、使用评价和 README。使用评价必须说明判断来自哪些公开材料；不能把阅读仓库写成亲自安装或长期使用。
+Skills、DSH 插件、Agent 插件、MCP 与 Prompt 合集/教程的详情正文依次提供项目介绍、核心功能、安装与使用、使用场景、使用评价和 README。使用评价必须说明判断来自哪些公开材料；不能把阅读仓库写成亲自安装或长期使用。
 
-`detail.installationGuide` 必须提供项目专属的安装导语、准备条件、成功验证方法、必要注意事项，以及可直接交给 Codex、Claude Code 等 AI Agent 的 `agentInstallPrompt`；`detail.tutorialSteps` 至少提供两个可执行步骤。提示词必须写明资源名称、GitHub 项目地址、需要读取的安装资料、目标操作、验证方法，以及遇到凭据、额外权限或覆盖文件时先向用户确认。命令或配置必须来自仓库证据，但正文要把零散的 README 信息整理成用户可以直接照做的教程。不得用“克隆完整 Skill”“选择获取方式”充当教程标题，也不得把“查看官方安装说明”“按照 README 操作”当作关键步骤。
+单条可复制 Prompt 使用 `detail.prompt.kind = "standalone"`，并同时填写完整 `text`、可选 `placeholder` 与 GitHub `sourceUrl`；英文版本在 `localizations.en.detail.prompt` 提供自然英文正文，并保持相同来源。单条 Prompt 页面只展示一段介绍、完整可复制正文和来源，不生成项目型的安装、功能、评价或 README 页面模块。Prompt 合集使用 `collection`，教程使用 `guide`，继续采用完整项目详情结构。
+
+除 `detail.prompt.kind = "standalone"` 的单条 Prompt 外，`detail.installationGuide` 必须提供项目专属的安装导语、准备条件、成功验证方法、必要注意事项，以及可直接交给 Codex、Claude Code 等 AI Agent 的 `agentInstallPrompt`；`detail.tutorialSteps` 至少提供两个可执行步骤。提示词必须写明资源名称、GitHub 项目地址、需要读取的安装资料、目标操作、验证方法，以及遇到凭据、额外权限或覆盖文件时先向用户确认。命令或配置必须来自仓库证据，但正文要把零散的 README 信息整理成用户可以直接照做的教程。不得用“克隆完整 Skill”“选择获取方式”充当教程标题，也不得把“查看官方安装说明”“按照 README 操作”当作关键步骤。
 
 ## 5. 准备媒体并本地校验
 

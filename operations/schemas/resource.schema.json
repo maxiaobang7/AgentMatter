@@ -456,6 +456,59 @@
           "type": "string",
           "maxLength": 500
         },
+        "prompt": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "standalone"
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 30000
+                },
+                "placeholder": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "sourceUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "kind",
+                "text",
+                "sourceUrl"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "collection",
+                    "guide"
+                  ]
+                },
+                "sourceUrl": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
         "suitableFor": {
           "maxItems": 20,
           "type": "array",
@@ -1067,6 +1120,59 @@
                 "githubDescription": {
                   "type": "string",
                   "maxLength": 500
+                },
+                "prompt": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "standalone"
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 20,
+                          "maxLength": 30000
+                        },
+                        "placeholder": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        },
+                        "sourceUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "text",
+                        "sourceUrl"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "collection",
+                            "guide"
+                          ]
+                        },
+                        "sourceUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
                 },
                 "suitableFor": {
                   "maxItems": 20,
