@@ -11,6 +11,10 @@ const CATEGORY_TERMS: Record<CategorySlug, string[]> = {
 const INTENT_TERMS = ["安装", "配置", "教程", "使用", "指南"];
 const UNSUPPORTED_CLAIMS = ["最好", "最强", "第一", "唯一"];
 
+function titleOutsideResourceName(title: string, resourceName: string) {
+  return title.toLocaleLowerCase().replaceAll(resourceName.toLocaleLowerCase(), "");
+}
+
 export type SeoTitleEvaluation = {
   score: number;
   grade: "excellent" | "good" | "needs-work";
@@ -29,10 +33,11 @@ export function normalizeSeoTitle(value: string) {
 export function seoTitleHardIssues(resource: Pick<Resource, "name" | "officialKind">, title: string) {
   const issues: string[] = [];
   const normalized = title.toLocaleLowerCase();
+  const outsideName = titleOutsideResourceName(title, resource.name);
   if (!normalized.includes(resource.name.toLocaleLowerCase())) issues.push("标题必须包含完整项目名");
   if (normalized.includes("agentmatter")) issues.push("标题中不要写 AgentMatter，页面会自动添加品牌名");
   if (resource.officialKind === "community" && title.includes("官方")) issues.push("社区项目不能标注为官方");
-  if (UNSUPPORTED_CLAIMS.some((claim) => title.includes(claim))) issues.push("标题包含无法由仓库资料证明的绝对化表述");
+  if (UNSUPPORTED_CLAIMS.some((claim) => outsideName.includes(claim))) issues.push("标题包含无法由仓库资料证明的绝对化表述");
   return issues;
 }
 
@@ -42,6 +47,7 @@ export function evaluateResourceSeoTitle(resource: Pick<Resource, "name" | "cate
   const displayUnits = estimateSeoTitleDisplayUnits(fullTitle);
   let score = 0;
   const normalized = title.toLocaleLowerCase();
+  const outsideName = titleOutsideResourceName(title, resource.name);
 
   if (normalized.includes(resource.name.toLocaleLowerCase())) score += 25;
   if (CATEGORY_TERMS[resource.category].some((term) => normalized.includes(term.toLocaleLowerCase()))) score += 15;
@@ -59,7 +65,7 @@ export function evaluateResourceSeoTitle(resource: Pick<Resource, "name" | "cate
   else if (displayUnits < 88) score += 8;
   else issues.push("完整标题偏长，搜索结果中可能较早被截断");
 
-  if (title.trim() !== `${resource.name} 安装与使用` && !UNSUPPORTED_CLAIMS.some((claim) => title.includes(claim))) score += 10;
+  if (title.trim() !== `${resource.name} 安装与使用` && !UNSUPPORTED_CLAIMS.some((claim) => outsideName.includes(claim))) score += 10;
   else if (title.trim() === `${resource.name} 安装与使用`) issues.push("标题过于通用，缺少项目的具体用途");
 
   const bounded = Math.max(0, Math.min(100, score));
